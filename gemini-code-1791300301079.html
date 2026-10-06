@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full bg-neutral-950 text-white">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FitPulse - Gym Trainer App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lime: {
+                            DEFAULT: '#CCFF00',
+                            400: '#D8FF33',
+                            500: '#CCFF00',
+                            600: '#A6D900',
+                        },
+                        dark: {
+                            900: '#0f0f0f',
+                            800: '#181818',
+                            700: '#262626',
+                            600: '#333333',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .lime-glow {
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.3);
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 16px);
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans select-none overflow-x-hidden bg-dark-900">
+
+    <!-- HEADER / NAVBAR -->
+    <header class="bg-dark-800 border-b border-dark-700 px-4 py-3 flex items-center justify-between shrink-0 sticky top-0 z-30">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-lg bg-lime flex items-center justify-center font-black text-black text-xl">F</div>
+            <span class="font-extrabold text-xl tracking-wider text-white">FIT<span class="text-lime">PULSE</span></span>
+        </div>
+        <button id="settings-btn" onclick="openSettings()" class="w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center text-gray-300 hover:text-lime transition">
+            <i class="fa-solid fa-gear text-lg"></i>
+        </button>
+    </header>
+
+    <!-- VISTA PRINCIPALE: SELEZIONE GIORNATA -->
+    <main id="view-selection" class="flex-1 overflow-y-auto p-4 space-y-5">
+        <div class="text-center my-2">
+            <h1 class="text-2xl font-black uppercase text-white tracking-wide">Seleziona Allenamento</h1>
+            <p class="text-xs text-gray-400 mt-1">Scegli la scheda della giornata di oggi</p>
+        </div>
+
+        <!-- CARDS GIORNATE -->
+        <div class="space-y-4 max-w-md mx-auto">
+            <!-- GIORNATA A -->
+            <div onclick="startWorkout('A')" class="bg-dark-800 border-2 border-dark-700 hover:border-lime rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:lime-glow group">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-3 py-1 rounded-full bg-lime text-black font-black text-xs uppercase tracking-wider">GIORNATA A</span>
+                    <span class="text-xs text-gray-400"><i class="fa-solid fa-dumbbell mr-1"></i> 9 Esercizi</span>
+                </div>
+                <h2 class="text-lg font-bold text-white group-hover:text-lime transition">Petto, Bicipiti & Addome</h2>
+                <p class="text-xs text-gray-400 mt-1">Chest Press, Push Up, Fly Machine, Curl, Crunch...</p>
+                <div class="mt-4 flex items-center text-xs font-semibold text-lime">
+                    <span>Inizia Scheda A</span>
+                    <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </div>
+
+            <!-- GIORNATA B -->
+            <div onclick="startWorkout('B')" class="bg-dark-800 border-2 border-dark-700 hover:border-lime rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:lime-glow group">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-3 py-1 rounded-full bg-lime text-black font-black text-xs uppercase tracking-wider">GIORNATA B</span>
+                    <span class="text-xs text-gray-400"><i class="fa-solid fa-dumbbell mr-1"></i> 9 Esercizi</span>
+                </div>
+                <h2 class="text-lg font-bold text-white group-hover:text-lime transition">Dorso, Tricipiti & Addome</h2>
+                <p class="text-xs text-gray-400 mt-1">Lat Machine, Low Row, French Press, Abdominal...</p>
+                <div class="mt-4 flex items-center text-xs font-semibold text-lime">
+                    <span>Inizia Scheda B</span>
+                    <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </div>
+
+            <!-- GIORNATA C -->
+            <div onclick="startWorkout('C')" class="bg-dark-800 border-2 border-dark-700 hover:border-lime rounded-2xl p-5 cursor-pointer transition-all duration-200 hover:lime-glow group">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="px-3 py-1 rounded-full bg-lime text-black font-black text-xs uppercase tracking-wider">GIORNATA C</span>
+                    <span class="text-xs text-gray-400"><i class="fa-solid fa-dumbbell mr-1"></i> 9 Esercizi</span>
+                </div>
+                <h2 class="text-lg font-bold text-white group-hover:text-lime transition">Gambe, Spalle & Addome</h2>
+                <p class="text-xs text-gray-400 mt-1">Leg Press, Leg Extension, Shoulder Press, Crunch...</p>
+                <div class="mt-4 flex items-center text-xs font-semibold text-lime">
+                    <span>Inizia Scheda C</span>
+                    <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIEPILOGO RAPIDO STATISTICHE -->
+        <div class="max-w-md mx-auto bg-dark-800 border border-dark-700 rounded-2xl p-4 mt-6">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3"><i class="fa-solid fa-chart-line text-lime mr-1"></i> I Tuoi Progressi Salvati</h3>
+            <div class="grid grid-cols-2 gap-3 text-center">
+                <div class="bg-dark-900 rounded-xl p-3 border border-dark-700">
+                    <span id="stat-completed" class="block text-xl font-black text-lime">0</span>
+                    <span class="text-[10px] text-gray-400 uppercase">Allenamenti Fatti</span>
+                </div>
+                <div class="bg-dark-900 rounded-xl p-3 border border-dark-700">
+                    <span id="stat-last" class="block text-xs font-bold text-gray-200 mt-1">Nessuno</span>
+                    <span class="text-[10px] text-gray-400 uppercase">Ultima Sessione</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- VISTA ALLENAMENTO FULLSCREEN -->
+    <div id="view-workout" class="fixed inset-0 bg-dark-900 z-40 hidden flex flex-col">
+        
+        <!-- HEADER ALLENAMENTO -->
+        <div class="bg-dark-800 border-b border-dark-700 p-3 flex items-center justify-between shrink-0">
+            <button onclick="confirmExitWorkout()" class="text-gray-400 hover:text-white px-2 py-1">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="text-center">
+                <span id="workout-day-title" class="text-xs font-black uppercase text-lime tracking-widest block">GIORNATA A</span>
+                <span id="workout-progress-text" class="text-xs text-gray-400">Esercizio 1 di 9</span>
+            </div>
+            <div id="timer-display" class="bg-dark-900 border border-dark-700 px-3 py-1 rounded-full text-xs font-mono font-bold text-gray-300">
+                00:00
+            </div>
+        </div>
+
+        <!-- BARRA DI PROGRESSO -->
+        <div class="w-full bg-dark-700 h-1.5 shrink-0">
+            <div id="workout-progress-bar" class="bg-lime h-full transition-all duration-300" style="width: 10%;"></div>
+        </div>
+
+        <!-- CONTENUTO ESERCIZIO A TUTTO SCHERMO (SCROLLABILE) -->
+        <div class="flex-1 overflow-y-auto p-4 flex flex-col items-center justify-between space-y-4">
+            
+            <!-- CODE BADGE (NUMERO MACCHINARIO) -->
+            <div class="w-full flex justify-between items-center max-w-md">
+                <span id="ex-code" class="px-3 py-1 bg-lime text-black font-black text-sm rounded-lg shadow">
+                    N° 120
+                </span>
+                <span id="skip-badge" class="hidden px-3 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/40 font-bold text-xs rounded-lg">
+                    <i class="fa-solid fa-clock-rotate-left mr-1"></i> Recuperato dopo Skip
+                </span>
+            </div>
+
+            <!-- IMMAGINE ESERCIZIO -->
+            <div class="w-full max-w-md bg-dark-800 border border-dark-700 rounded-2xl overflow-hidden relative group h-56 flex items-center justify-center shrink-0">
+                <img id="ex-image" src="" alt="Esercizio" class="w-full h-full object-contain p-2">
+            </div>
+
+            <!-- DIDASCALIA E DETTAGLI -->
+            <div class="w-full max-w-md bg-dark-800 border border-dark-700 rounded-2xl p-4 space-y-3">
+                <h2 id="ex-title" class="text-xl font-black text-white uppercase tracking-wide">TAPIS ROULANT</h2>
+                
+                <div class="grid grid-cols-3 gap-2 text-center py-2 border-y border-dark-700">
+                    <div class="bg-dark-900 p-2 rounded-xl border border-dark-700">
+                        <span class="block text-[10px] text-gray-400 uppercase">Serie</span>
+                        <span id="ex-sets" class="text-base font-extrabold text-white">-</span>
+                    </div>
+                    <div class="bg-dark-900 p-2 rounded-xl border border-dark-700">
+                        <span class="block text-[10px] text-gray-400 uppercase">Reps / Tempo</span>
+                        <span id="ex-reps" class="text-base font-extrabold text-lime">10'</span>
+                    </div>
+                    <div class="bg-dark-900 p-2 rounded-xl border border-dark-700">
+                        <span class="block text-[10px] text-gray-400 uppercase">Recupero</span>
+                        <span id="ex-rest" class="text-base font-extrabold text-white">-</span>
+                    </div>
+                </div>
+
+                <!-- CAMPO PESO SOLLEVATO -->
+                <div class="flex items-center justify-between bg-dark-900 border border-dark-700 rounded-xl p-3">
+                    <label for="ex-weight-input" class="text-xs font-bold text-gray-300 flex items-center">
+                        <i class="fa-solid fa-weight-hanging text-lime mr-2"></i> Carico Utilizzato:
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        <input type="number" id="ex-weight-input" placeholder="0" class="w-20 bg-dark-800 border border-dark-600 rounded-lg text-center py-1 font-bold text-lime focus:outline-none focus:border-lime">
+                        <span class="text-xs font-bold text-gray-400">KG</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLLI SERIE ATTUALE -->
+            <div id="set-tracker" class="w-full max-w-md flex items-center justify-center space-x-2 py-1">
+                <!-- Generato Dinamicamente -->
+            </div>
+        </div>
+
+        <!-- CONTROLLI IN BASSO (I 2 TASTI PRINCIPALI) -->
+        <div class="p-4 bg-dark-800 border-t border-dark-700 shrink-0 pb-safe">
+            <div class="max-w-md mx-auto grid grid-cols-2 gap-3">
+                <!-- TASTO SKIP -->
+                <button onclick="skipExercise()" class="bg-dark-700 hover:bg-dark-600 text-amber-400 border border-amber-500/30 font-bold py-4 px-3 rounded-2xl flex flex-col items-center justify-center active:scale-95 transition">
+                    <i class="fa-solid fa-forward text-lg mb-1"></i>
+                    <span class="text-xs uppercase font-extrabold">SKIP / Occupato</span>
+                </button>
+
+                <!-- TASTO FATTO / AVANTI -->
+                <button onclick="completeStep()" class="bg-lime hover:bg-lime-400 text-black font-black py-4 px-3 rounded-2xl flex flex-col items-center justify-center shadow-lg lime-glow active:scale-95 transition">
+                    <i class="fa-solid fa-check text-xl mb-1"></i>
+                    <span id="btn-next-text" class="text-xs uppercase tracking-wider">FATTO / AVANTI</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE TIMER RECUPERO -->
+    <div id="modal-rest" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-dark-800 border-2 border-lime rounded-3xl p-6 text-center max-w-sm w-full space-y-4 shadow-2xl lime-glow">
+            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Tempo di Recupero</span>
+            <div id="rest-timer-counter" class="text-6xl font-black font-mono text-lime py-2">
+                01:30
+            </div>
+            <p class="text-xs text-gray-300">Rilassati e preparati per la prossima serie</p>
+            
+            <div class="flex justify-center space-x-3 pt-2">
+                <button onclick="addRestTime(10)" class="bg-dark-700 hover:bg-dark-600 text-white font-bold py-2 px-4 rounded-xl text-xs">
+                    +10 sec
+                </button>
+                <button onclick="closeRestModal()" class="bg-lime text-black font-extrabold py-2 px-6 rounded-xl text-xs">
+                    SALTA RECUPERO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE IMPOSTAZIONI -->
+    <div id="modal-settings" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-dark-800 border border-dark-700 rounded-3xl p-5 max-w-md w-full space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-dark-700 pb-3">
+                <h3 class="font-extrabold text-lg text-white uppercase"><i class="fa-solid fa-sliders text-lime mr-2"></i> Impostazioni App</h3>
+                <button onclick="closeSettings()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-300 mb-1">Suono Fine Recupero</label>
+                    <select id="setting-sound" class="w-full bg-dark-900 border border-dark-700 rounded-xl p-3 font-semibold text-white focus:outline-none focus:border-lime">
+                        <option value="enabled">Attivato (Beep)</option>
+                        <option value="disabled">Disattivato</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-gray-300 mb-1">Aumenta Tempo Recupero Standard</label>
+                    <select id="setting-rest-extra" class="w-full bg-dark-900 border border-dark-700 rounded-xl p-3 font-semibold text-white focus:outline-none focus:border-lime">
+                        <option value="0">Default Scheda</option>
+                        <option value="15">+15 Secondi a tutti</option>
+                        <option value="30">+30 Secondi a tutti</option>
+                    </select>
+                </div>
+
+                <div class="pt-2 border-t border-dark-700 space-y-2">
+                    <button onclick="resetAllData()" class="w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 font-bold py-3 rounded-xl transition">
+                        Reset Storico e Pesi Salvati
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="closeSettings()" class="w-full bg-lime text-black font-extrabold py-3 rounded-xl uppercase">
+                Salva e Chiudi
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // DATASET DELLA SCHEDA DI ALLENAMENTO
+        const workoutData = {
+            'A': [
+                { code: '120', name: 'TAPIS ROULANT', sets: 1, reps: "10'", rest: '0"', img: 'https://images.unsplash.com/photo-1576678927484-cc909957088c?auto=format&fit=crop&w=600&q=80', isCardio: true },
+                { code: '5', name: 'CHEST PRESS', sets: 4, reps: '10', rest: "1'30\"", img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80' },
+                { code: '28B', name: 'PUSH UP', sets: 4, reps: '10', rest: "1'30\"", img: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00?auto=format&fit=crop&w=600&q=80' },
+                { code: '28C', name: 'CHEST FLY MACHINE', sets: 3, reps: '12', rest: "1'", img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80' },
+                { code: '39', name: 'CURL ALTERNATO CON MANUBRI', sets: 4, reps: '10', rest: "1'", img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80' },
+                { code: '41', name: 'CURL AL CAVO BASSO', sets: 3, reps: '12', rest: "1'", img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80' },
+                { code: '9', name: 'CRUNCH SU PANCA', sets: 4, reps: '20', rest: '30"', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80' },
+                { code: '50', name: 'CRUNCH INVERSO', sets: 4, reps: '20', rest: '30"', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80' },
+                { code: '120', name: 'TAPIS ROULANT', sets: 1, reps: "10'", rest: '0"', img: 'https://images.unsplash.com/photo-1576678927484-cc909957088c?auto=format&fit=crop&w=600&q=80', isCardio: true }
+            ],
+            'B': [
+                { code: '123', name: 'GLIDEX', sets: 1, reps: "10'", rest: '0"', img: 'https://images.unsplash.com/photo-1576678927484-cc909957088c?auto=format&fit=crop&w=600&q=80', isCardio: true },
+                { code: '21', name: 'LAT MACHINE', sets: 4, reps: '10', rest: "1'30\"", img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80' },
+                { code: '2', name: 'LOW ROW', sets: 4, reps: '10', rest: "1'30\"", img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80' },
+                { code: '4', name: 'VERTICAL TRACTION', sets: 3, reps: '12', rest: "1'", img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80' },
+                { code: '54', name: 'PANCA IPEREXTENSION', sets: 3, reps: '15', rest: '30"', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80' },
+                { code: '46', name: 'FRENCH PRESS CON BILANCIERE', sets: 4, reps: '10', rest: "1'", img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80' },
+                { code: '43', name: 'ESTENSIONI AI CAVI', sets: 3, reps: '12', rest: "1'", img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80' },
+                { code: '11', name: 'ABDOMINAL', sets: 4, reps: '20', rest: '30"', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80' },
+                { code: '120', name: 'TAPIS ROULANT', sets: 1, reps: "10'", rest: '0"', img: 'https://images.unsplash.com/photo-1576678927484-cc909957088c?auto=format&fit=crop&w=600&q=80', isCardio: true }
+            ],
+            'C': [
+                { code: '121', name: 'BIKE', sets: 1, reps: "10'", rest: '0"', img: 'https://images.unsplash.com/photo-1576678927484-cc909957088c?auto=format&fit=crop&w=600&q=80', isCardio: true },
+                { code: '6', name: 'LEG PRESS', sets: 4, reps: '12', rest: "1'30\"", img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80' },
+                { code: '13', name: 'LEG EXTENSION', sets: 3, reps: '12', rest: "1'", img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80' },
+                { code: '20', name: 'CALF MACHINE PURE STRENGTH', sets: 4, reps: '15', rest: '30"', img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80' },
+                { code: '3', name: 'SHOULDER PRESS', sets: 4, reps: '10', rest: "1'30\"", img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80' },
+                { code: '17', name: "DELT'S MACHINE", sets: 4, reps: '10', rest: "1'", img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=80' },
+                { code: '49', name: 'CRUNCH A TERRA GAMBE A 90°', sets: 3, reps: '20', rest: '30"', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80' },
+                { code: '49A', name: 'BICYCLE CRUNCH', sets: 3, reps: '15', rest: '30"', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&q=80' },
+                { code: '120', name: 'TAPIS ROULANT', sets: 1, reps: "10'", rest: '0"', img: 'https://images.unsplash.com/photo-1576678927484-cc909957088c?auto=format&fit=crop&w=600&q=80', isCardio: true }
+            ]
+        };
+
+        // STATO APPLICAZIONE
+        let currentDay = 'A';
+        let queue = [];
+        let currentIndex = 0;
+        let currentSet = 1;
+        let totalExercisesInitial = 0;
+        let workoutTimerInterval = null;
+        let workoutSeconds = 0;
+        let restTimerInterval = null;
+        let restSecondsLeft = 0;
+
+        // INIZIALIZZAZIONE DALLO STORAGE LOCALE
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+        });
+
+        function loadStats() {
+            const completed = localStorage.getItem('fitpulse_completed') || '0';
+            const last = localStorage.getItem('fitpulse_last') || 'Nessuno';
+            document.getElementById('stat-completed').innerText = completed;
+            document.getElementById('stat-last').innerText = last;
+        }
+
+        // AVVIO ALLENAMENTO
+        function startWorkout(day) {
+            currentDay = day;
+            queue = workoutData[day].map(item => ({ ...item, isSkipped: false }));
+            totalExercisesInitial = queue.length;
+            currentIndex = 0;
+            currentSet = 1;
+            workoutSeconds = 0;
+
+            document.getElementById('workout-day-title').innerText = `GIORNATA ${day}`;
+            document.getElementById('view-workout').classList.remove('hidden');
+
+            // Timer Allenamento Totale
+            clearInterval(workoutTimerInterval);
+            workoutTimerInterval = setInterval(() => {
+                workoutSeconds++;
+                const mins = String(Math.floor(workoutSeconds / 60)).padStart(2, '0');
+                const secs = String(workoutSeconds % 60).padStart(2, '0');
+                document.getElementById('timer-display').innerText = `${mins}:${secs}`;
+            }, 1000);
+
+            renderExercise();
+        }
+
+        // RENDERING ESERCIZIO CORRENTE
+        function renderExercise() {
+            if (currentIndex >= queue.length) {
+                finishWorkout();
+                return;
+            }
+
+            const ex = queue[currentIndex];
+
+            // Badge Skip
+            if (ex.isSkipped) {
+                document.getElementById('skip-badge').classList.remove('hidden');
+            } else {
+                document.getElementById('skip-badge').classList.add('hidden');
+            }
+
+            document.getElementById('ex-code').innerText = `N° ${ex.code}`;
+            document.getElementById('ex-title').innerText = ex.name;
+            document.getElementById('ex-image').src = ex.img;
+            document.getElementById('ex-sets').innerText = ex.sets;
+            document.getElementById('ex-reps').innerText = ex.reps;
+            document.getElementById('ex-rest').innerText = ex.rest;
+
+            // Carico salvato
+            const savedWeight = localStorage.getItem(`fitpulse_weight_${ex.code}`) || '';
+            document.getElementById('ex-weight-input').value = savedWeight;
+
+            // Aggiorna Progresso
+            const progress = Math.min(Math.round(((currentIndex) / totalExercisesInitial) * 100), 100);
+            document.getElementById('workout-progress-bar').style.width = `${progress}%`;
+            document.getElementById('workout-progress-text').innerText = `Esercizio ${currentIndex + 1} di ${queue.length}`;
+
+            // Indicatore Serie
+            renderSetTracker(ex.sets);
+        }
+
+        function renderSetTracker(totalSets) {
+            const container = document.getElementById('set-tracker');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= totalSets; i++) {
+                const dot = document.createElement('div');
+                dot.className = `h-2 flex-1 rounded-full transition-all ${
+                    i < currentSet ? 'bg-lime' : i === currentSet ? 'bg-white lime-glow scale-105' : 'bg-dark-700'
+                }`;
+                container.appendChild(dot);
+            }
+        }
+
+        // TASTO FATTO / AVANTI
+        function completeStep() {
+            const ex = queue[currentIndex];
+
+            // Salvataggio peso
+            const weightInput = document.getElementById('ex-weight-input').value;
+            if (weightInput) {
+                localStorage.setItem(`fitpulse_weight_${ex.code}`, weightInput);
+            }
+
+            // Se ci sono ancora serie per questo esercizio
+            if (currentSet < ex.sets) {
+                currentSet++;
+                renderSetTracker(ex.sets);
+                triggerRestTimer(ex.rest);
+            } else {
+                // Esercizio completato
+                currentIndex++;
+                currentSet = 1;
+
+                if (ex.rest !== '0"') {
+                    triggerRestTimer(ex.rest);
+                }
+                renderExercise();
+            }
+        }
+
+        // TASTO SKIP (SPOSTA IN FONDO ALLA CODA)
+        function skipExercise() {
+            if (queue.length <= 1) {
+                alert('Questo è l\'ultimo esercizio rimasto!');
+                return;
+            }
+
+            const skippedEx = queue.splice(currentIndex, 1)[0];
+            skippedEx.isSkipped = true;
+            queue.push(skippedEx);
+
+            currentSet = 1;
+            renderExercise();
+        }
+
+        // GESTIONE TIMER RECUPERO
+        function triggerRestTimer(restStr) {
+            let seconds = parseRestSeconds(restStr);
+            if (seconds <= 0) return;
+
+            restSecondsLeft = seconds;
+            document.getElementById('modal-rest').classList.remove('hidden');
+            updateRestDisplay();
+
+            clearInterval(restTimerInterval);
+            restTimerInterval = setInterval(() => {
+                restSecondsLeft--;
+                updateRestDisplay();
+
+                if (restSecondsLeft <= 0) {
+                    closeRestModal();
+                    playBeep();
+                }
+            }, 1000);
+        }
+
+        function parseRestSeconds(str) {
+            if (str.includes("'")) {
+                const parts = str.split("'");
+                let mins = parseInt(parts[0]) || 0;
+                let secs = parseInt(parts[1]) || 0;
+                return (mins * 60) + secs;
+            }
+            return parseInt(str) || 0;
+        }
+
+        function updateRestDisplay() {
+            const m = String(Math.floor(restSecondsLeft / 60)).padStart(2, '0');
+            const s = String(restSecondsLeft % 60).padStart(2, '0');
+            document.getElementById('rest-timer-counter').innerText = `${m}:${s}`;
+        }
+
+        function addRestTime(sec) {
+            restSecondsLeft += sec;
+            updateRestDisplay();
+        }
+
+        function closeRestModal() {
+            clearInterval(restTimerInterval);
+            document.getElementById('modal-rest').classList.add('hidden');
+        }
+
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                osc.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        // FINE ALLENAMENTO
+        function finishWorkout() {
+            clearInterval(workoutTimerInterval);
+            document.getElementById('view-workout').classList.add('hidden');
+
+            // Salva Statistiche
+            let currentCompleted = parseInt(localStorage.getItem('fitpulse_completed') || '0');
+            localStorage.setItem('fitpulse_completed', currentCompleted + 1);
+            localStorage.setItem('fitpulse_last', `Giornata ${currentDay}`);
+            loadStats();
+
+            alert(`🎉 Allenamento completato con successo!\nTempo Totale: ${document.getElementById('timer-display').innerText}`);
+        }
+
+        function confirmExitWorkout() {
+            if (confirm("Vuoi davvero uscire dall'allenamento in corso?")) {
+                clearInterval(workoutTimerInterval);
+                document.getElementById('view-workout').classList.add('hidden');
+            }
+        }
+
+        // IMPOSTAZIONI
+        function openSettings() {
+            document.getElementById('modal-settings').classList.remove('hidden');
+        }
+
+        function closeSettings() {
+            document.getElementById('modal-settings').classList.add('hidden');
+        }
+
+        function resetAllData() {
+            if (confirm("Sei sicuro di voler resettare tutti i dati e i pesi salvati?")) {
+                localStorage.clear();
+                loadStats();
+                closeSettings();
+                alert("Dati resettati correttamente!");
+            }
+        }
+    </script>
+</body>
+</html>
